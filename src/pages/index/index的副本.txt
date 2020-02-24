@@ -1,0 +1,157 @@
+<template>
+  <div>
+    {{StrategyName1}}
+    <el-table
+      :data="tableData"
+      style="width: 100%"
+      :default-sort="{prop: 'date', order: 'descending'}"
+    >
+      <el-table-column prop="name" label="策略名称" sortable width="180"></el-table-column>
+      <el-table-column prop="address" label="策略ID" width="180"></el-table-column>
+      <el-table-column prop="type" label="事件类型" sortable width="100"></el-table-column>
+      <el-table-column prop="date" label="发生时间" sortable width="180"></el-table-column>
+      <el-table-column prop="content" label="事件详情" sortable width="180"></el-table-column>
+      <el-table-column align="right">
+        <template slot="header">
+          <el-select
+            v-model="value1"
+            style="width:20%;"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="策略名称"
+          >
+            <el-option
+              v-for="(item,index) in StrategyName1"
+              :key="index"
+              :label="item.key"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+          <el-select
+            v-model="value2"
+            style="width:20%;"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="策略ID"
+          >
+            <el-option v-for="item in StrategyID1" :key="item.value" :value="item.value"></el-option>
+          </el-select>
+          <el-select
+            v-model="value3"
+            style="width:20%;"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="事件类型"
+          >
+            <el-option
+              v-for="item in EventType1"
+              :key="item.value"
+              :label="item.key"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+          <el-date-picker v-model="value1" type="date" placeholder="发生时间" style="width:20%;"></el-date-picker>
+          <el-button>搜索</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      tableData: [
+        {
+          date: "2016-05-02",
+          name: "超级11多",
+          address: "1211080221",
+          type: "启动",
+          content: "开仓231"
+        },
+        {
+          date: "2016-05-04",
+          name: "超级22多",
+          address: "1211080221",
+          type: "开仓",
+          content: "开仓231"
+        },
+        {
+          date: "2016-05-01",
+          name: "超级33多",
+          address: "1211080221",
+          type: "开仓",
+          content: "开仓231"
+        },
+        {
+          date: "2016-05-03",
+          name: "超级44多",
+          address: "1211080221",
+          type: "启动",
+          content: "开仓231"
+        }
+      ],
+      value1: "",
+      value2: "",
+      value3: "",
+      EventType1: [{ key: 0, value: 0 }],
+      StrategyName1: [],
+      StrategyID1: []
+    };
+  },
+  created() {},
+  watch: {
+    EventType1: {
+      handler(newVal, oldVal) {
+        console.log("新：", newVal, "旧", oldVal);
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    //EventType这是事件类型，StrategyID策略id，StrategyName策略名称，对哇
+    this.getEventType("EventType");
+    this.getEventType("StrategyName");
+    this.getEventType("StrategyID");
+  },
+  methods: {
+    formatter(row, column) {
+      return row.address;
+    },
+    getEventType: function(type) {
+      this.axios
+        .post("/three/search/field", {
+          BrokerID: 9999,
+          UserAccountID: 100911004,
+          SearchField: type
+        })
+        .then(response => {
+          if (response.data.code == 1) {
+            if (type == "EventType") {
+              this.EventType1 = response.data.data;
+              console.log("类型", this.EventType1.constructor == Array);
+              // console.log("事件类型", typeof(this.EventType1));
+            } else if (type == "StrategyName") {
+              this.StrategyName1 = response.data.data;
+              // console.log("策略名称", this.StrategyName);
+            } else if (type == "StrategyID") {
+              this.StrategyID1 = response.data.data;
+              // console.log("策略ID", this.StrategyID);
+            }
+            this.$forceUpdate();
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+  }
+};
+</script>
