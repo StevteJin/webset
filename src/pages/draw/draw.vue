@@ -96,11 +96,22 @@ export default {
             this.middlePrice = response.data.data.config.middlePrice;
             //标题
             this.strategyTypeText = response.data.data.config.strategyTypeText;
-            this.scatter = response.data.data.config.scatter;
+            this.scatter = response.data.data.scatter;
+            console.log(typeof this.scatter);
+            let timeArray = [];
+            let scatter=[];
+            this.scatter.forEach((item, index, array) => {
+              //执行代码
+              timeArray.push(item[1]);
+              scatter.push(item[2]);
+            });
+            console.log("数组", scatter);
             this.drawLine(
               this.gridLinePrices,
               this.middlePrice,
-              this.strategyTypeText
+              this.strategyTypeText,
+              timeArray,
+              scatter
             );
           }
         })
@@ -112,7 +123,7 @@ export default {
       this.currentPage = val;
       this.getAccountList();
     },
-    drawLine(gridLinePrices, middlePrice, strategyTypeText) {
+    drawLine(gridLinePrices, middlePrice, strategyTypeText, time,scatter) {
       // 基于准备好的dom，初始化echarts实例
       let myChart = this.$echarts.init(document.getElementById("myChart"));
       //坐标颜色
@@ -139,28 +150,7 @@ export default {
           },
           //线的样式
           axisLine: { lineStyle: { color: "#8392A5" } },
-          data: [
-            "00:00",
-            "01:15",
-            "02:30",
-            "03:45",
-            "05:00",
-            "06:15",
-            "07:30",
-            "08:45",
-            "10:00",
-            "11:15",
-            "12:30",
-            "13:45",
-            "15:00",
-            "16:15",
-            "17:30",
-            "18:45",
-            "20:00",
-            "21:15",
-            "22:30",
-            "23:45"
-          ]
+          data: time
         },
         //Y轴,这里有左右两个Y轴
         yAxis: [
@@ -192,7 +182,7 @@ export default {
           {
             //scatter为散点图
             type: "scatter",
-            data: [[0, 0.6, 2463], [1, 3, 10784], [2, 5, 7849], [3, 7, 27456]]
+            data: [[0,"2020-03-03 10:33:44","46090.000000"]]
           }
         ]
       });
