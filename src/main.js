@@ -16,6 +16,9 @@ import 'lib-flexible/flexible';
 import axios from './http';
 
 Vue.prototype.axios = axios;
+//eharts
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 
 Vue.use(Vuetify);
 Vue.use(ElementUI);

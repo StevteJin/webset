@@ -3,6 +3,7 @@ import Router from 'vue-router';
 
 import index from '@/pages/index/index';
 import h5 from '@/pages/h5/h5';
+import draw from '@/pages/draw/draw';
 
 Vue.use(Router);
 
@@ -12,12 +13,18 @@ const routes = [{
     title: 'PC版'
   },
   component: index
-},{
+}, {
   path: '/h5',
   meta: {
     title: 'h5版'
   },
   component: h5
+}, {
+  path: '/draw',
+  meta: {
+    title: '图表'
+  },
+  component: draw
 }];
 
 const router = new Router({
