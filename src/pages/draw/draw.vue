@@ -4,7 +4,7 @@
             <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
             <div id="myChart" :style="{width: '100%', height: '400px'}"></div>
         </div>
-        <div class="rightbox">
+        <div class="rightbox" v-if="tableData.length>0">
             <el-table :data="tableData" style="width: 100%;background-color:rgb(67,67,67);" :height="368" :span="24" :row-style="{height:'40px'}" :header-row-style="{height:'32px'}" :default-sort="{prop: 'LineIndex', order: 'descending'}" :cell-style="cellStyle" :header-cell-style="headerCellStyle" :border="true" stripe>
                 <!-- <el-table-column prop="LineIndex" label="网格线索引" sortable align="center"></el-table-column> -->
                 <el-table-column show-overflow-tooltip label="网格线索引" align="center">
@@ -24,16 +24,27 @@
                 <el-table-column show-overflow-tooltip label="理论持仓数量" align="center">
                     <template slot-scope="scope">
                         <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.TheoryPositionNum}}</div>
-                        <div v-if="scope.row.TheoryPositionNum<=0">{{scope.row.TheoryPositionNum}}</div>
+                        <div v-if="scope.row.TheoryPositionNum<=0&&scope.row.TruePositionNum<=0">{{scope.row.TheoryPositionNum}}</div>
                     </template>
                 </el-table-column>
                 <!-- <el-table-column prop="TruePositionNum" label="实际持仓数量" sortable align="center"></el-table-column> -->
                 <el-table-column show-overflow-tooltip label="实际持仓数量" align="center">
                     <template slot-scope="scope">
                         <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.TruePositionNum}}</div>
-                        <div v-if="scope.row.TruePositionNum<=0">{{scope.row.TruePositionNum}}</div>
+                        <div v-if="scope.row.TheoryPositionNum<=0&&scope.row.TruePositionNum<=0">{{scope.row.TruePositionNum}}</div>
                     </template>
                 </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination :current-page.sync="currentPage" layout="prev, pager, next" :page-size="pageSzie" :pager-count="5" :total="total" @current-change="handleCurrentChange"></el-pagination>
+            </div>
+        </div>
+        <div class="rightbox" v-if="tableData.length<=0">
+            <el-table :data="tableData" style="width: 100%;background-color:rgb(67,67,67);" :height="368" :span="24" :row-style="{height:'40px'}" :header-row-style="{height:'32px'}" :default-sort="{prop: 'LineIndex', order: 'descending'}" :cell-style="cellStyle" :header-cell-style="headerCellStyle" :border="true" stripe>
+                <el-table-column label="网格线索引" sortable align="center"></el-table-column>
+                <el-table-column label="网格线价格" sortable align="center"></el-table-column>
+                <el-table-column label="理论持仓数量" sortable align="center"></el-table-column>
+                <el-table-column label="实际持仓数量" sortable align="center"></el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination :current-page.sync="currentPage" layout="prev, pager, next" :page-size="pageSzie" :pager-count="5" :total="total" @current-change="handleCurrentChange"></el-pagination>
@@ -67,7 +78,13 @@ export default {
       scatter: [],
       screenWidth: document.body.clientWidth,
       strategyName: "",
-      isLoading: true
+      isLoading: true,
+      //是否需要止盈止损
+      isNeedStopWinOrStopLoss: "1",
+      //止损价
+      stopLossPrice: "",
+      //止盈价
+      stopWinPrice: ""
     };
   },
   created() {
@@ -162,6 +179,11 @@ export default {
             this.scatter = response.data.data.scatter;
             console.log("数组啊", this.scatter);
             let numBox = response.data.data.config.intervalPrice;
+            //止盈止损
+            this.isNeedStopWinOrStopLoss =
+              response.data.data.config.isNeedStopWinOrStopLoss;
+            this.stopLossPrice = response.data.data.config.stopLossPrice;
+            this.stopWinPrice = response.data.data.config.stopWinPrice;
             //默认显示的值范围
             console.log(typeof this.scatter);
             let timeArray = [];
@@ -200,7 +222,38 @@ export default {
               scatter,
               numBox,
               c,
-              this.strategyName
+              this.strategyName,
+              this.isNeedStopWinOrStopLoss,
+              this.stopLossPrice,
+              this.stopWinPrice
+            );
+            this.isLoading = false;
+          } else {
+            this.tableData = [];
+            for (var i = 0; i < 8; i++) {
+              this.tableData.push({
+                LineIndex: "",
+                LinePrice: "",
+                TheoryPositionNum: "",
+                TruePositionNum: ""
+              });
+            }
+            this.gridLinePrices = [0, 0, 0, 0, 0, 0];
+            this.strategyTypeText = "无数据";
+            this.strategyName = "无数据";
+
+            this.drawLine(
+              this.gridLinePrices,
+              null,
+              this.strategyTypeText,
+              null,
+              null,
+              null,
+              null,
+              this.strategyName,
+              null,
+              null,
+              null
             );
             this.isLoading = false;
           }
@@ -221,14 +274,22 @@ export default {
       scatter,
       numBox,
       c,
-      strategyName
+      strategyName,
+      isNeedStopWinOrStopLoss,
+      stopLossPrice,
+      stopWinPrice
     ) {
       // 基于准备好的dom，初始化echarts实例
       let myChart = this.$echarts.init(document.getElementById("myChart"));
       let o, p;
-      if (c) {
-        o = c * 0.7;
-        p = 100 ? c * 1.3 : 100;
+      if (gridLinePrices > 11) {
+        if (c) {
+          o = c * 0.7;
+          p = 100 ? c * 1.3 : 100;
+        } else {
+          o = 0;
+          p = 100;
+        }
       } else {
         o = 0;
         p = 100;
@@ -242,6 +303,105 @@ export default {
       var upBorderColor = "#8A0000";
       var downColor = "#00da3c";
       var downBorderColor = "#008F28";
+
+      let stopLossPrice1, stopWinPrice1;
+      if (stopLossPrice < gridLinePrices[0]) {
+        stopLossPrice1 = gridLinePrices[0];
+      } else {
+        stopLossPrice1 = stopLossPrice;
+      }
+      if (stopWinPrice > gridLinePrices[gridLinePrices.length - 1]) {
+        stopWinPrice1 = gridLinePrices[gridLinePrices.length - 1];
+      } else {
+        stopWinPrice1 = stopWinPrice;
+      }
+      console.log(
+        "止盈止损",
+        stopLossPrice1,
+        gridLinePrices[gridLinePrices.length - 1],
+        stopWinPrice1
+      );
+      let markLine,str;
+      if (isNeedStopWinOrStopLoss == 1) {
+        markLine = {
+          symbol: "none",
+          data: [
+            {
+              name: "止盈线",
+              //   yAxis: stopWinPrice
+              yAxis: stopWinPrice1,
+              lineStyle: {
+                normal: {
+                  type: "dashed",
+                  color: "red"
+                }
+              },
+              label: {
+                show: true,
+                position: "middle",
+                color: "red",
+                formatter: function(params) {
+                  str = "止盈线:" + stopWinPrice;
+
+                  return str;
+                }
+              },
+              tooltip: {
+                /*返回需要的信息*/
+                formatter: function(param) {
+                  var value = param.value;
+                  return (
+                    '<div style="border-bottom: 1px solid rgba(255,255,255,.3);width:160px;hieght:300px; font-size: 12px;"> ' +
+                    "止盈线：" +
+                    stopWinPrice +
+                    "</div>"
+                  );
+                }
+              }
+            },
+            {
+              name: "止损线",
+              yAxis: stopLossPrice1,
+              lineStyle: {
+                normal: {
+                  type: "dashed",
+                  color: "green"
+                },
+              },
+              label: {
+                show: true,
+                position: "middle",
+                color: "green",
+                formatter: function(params) {
+                  str = "止损线:" + stopLossPrice;
+
+                  return str;
+                }
+              },
+              tooltip: {
+                /*返回需要的信息*/
+                formatter: function(param) {
+                  var value = param.value;
+                  return (
+                    '<div style="border-bottom: 1px solid rgba(255,255,255,.3);width:160px;hieght:300px; font-size: 12px;"> ' +
+                    "止损线：" +
+                    stopLossPrice +
+                    "</div>"
+                  );
+                }
+              }
+            }
+          ],
+          label: {
+            normal: {
+              show: true,
+              position: "middle"
+            }
+          }
+        };
+      } else {
+        markLine = false;
+      }
       // 绘制图表
       myChart.setOption({
         //表格名称
@@ -255,7 +415,7 @@ export default {
         //公用的X轴
         xAxis: {
           type: "category",
-          boundaryGap: false, //xAxis中的boundaryGap属性，设置为false代表是零刻度开始，设置为true代表离零刻度间隔一段距离
+          boundaryGap: 0, //xAxis中的boundaryGap属性，设置为false代表是零刻度开始，设置为true代表离零刻度间隔一段距离
           splitLine: {
             show: false
           },
@@ -356,7 +516,8 @@ export default {
                   }
                 }
               }
-            }
+            },
+            markLine: markLine
           }
         ]
       });
