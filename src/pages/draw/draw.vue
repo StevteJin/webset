@@ -1,61 +1,62 @@
 <template>
-    <div class="dnfbox">
-        <div class="leftbox">
-            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-            <div id="myChart" :style="{width: '100%', height: '400px'}"></div>
-        </div>
-        <div class="rightbox" v-if="tableData.length>0">
-            <el-table :data="tableData" style="width: 100%;background-color:rgb(67,67,67);" :height="368" :span="24" :row-style="{height:'40px'}" :header-row-style="{height:'32px'}" :default-sort="{prop: 'LineIndex', order: 'descending'}" :cell-style="cellStyle" :header-cell-style="headerCellStyle" :border="true" stripe>
-                <!-- <el-table-column prop="LineIndex" label="网格线索引" sortable align="center"></el-table-column> -->
-                <el-table-column show-overflow-tooltip label="网格线索引" align="center">
-                    <template slot-scope="scope">
-                        <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.LineIndex}}</div>
-                        <div v-if="scope.row.TheoryPositionNum<=0">{{scope.row.LineIndex}}</div>
-                    </template>
-                </el-table-column>
-                <!-- <el-table-column prop="LinePrice" label="网格线价格" sortable align="center"></el-table-column> -->
-                <el-table-column show-overflow-tooltip label="网格线价格" align="center">
-                    <template slot-scope="scope">
-                        <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.LinePrice}}</div>
-                        <div v-if="scope.row.TheoryPositionNum<=0">{{scope.row.LinePrice}}</div>
-                    </template>
-                </el-table-column>
-                <!-- <el-table-column prop="TheoryPositionNum" label="理论持仓数量" sortable align="center"></el-table-column> -->
-                <el-table-column show-overflow-tooltip label="理论持仓数量" align="center">
-                    <template slot-scope="scope">
-                        <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.TheoryPositionNum}}</div>
-                        <div v-if="scope.row.TheoryPositionNum<=0&&scope.row.TruePositionNum<=0">{{scope.row.TheoryPositionNum}}</div>
-                    </template>
-                </el-table-column>
-                <!-- <el-table-column prop="TruePositionNum" label="实际持仓数量" sortable align="center"></el-table-column> -->
-                <el-table-column show-overflow-tooltip label="实际持仓数量" align="center">
-                    <template slot-scope="scope">
-                        <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.TruePositionNum}}</div>
-                        <div v-if="scope.row.TheoryPositionNum<=0&&scope.row.TruePositionNum<=0">{{scope.row.TruePositionNum}}</div>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination :current-page.sync="currentPage" layout="prev, pager, next" :page-size="pageSzie" :pager-count="5" :total="total" @current-change="handleCurrentChange"></el-pagination>
-            </div>
-        </div>
-        <div class="rightbox" v-if="tableData.length<=0">
-            <el-table :data="tableData" style="width: 100%;background-color:rgb(67,67,67);" :height="368" :span="24" :row-style="{height:'40px'}" :header-row-style="{height:'32px'}" :default-sort="{prop: 'LineIndex', order: 'descending'}" :cell-style="cellStyle" :header-cell-style="headerCellStyle" :border="true" stripe>
-                <el-table-column label="网格线索引" sortable align="center"></el-table-column>
-                <el-table-column label="网格线价格" sortable align="center"></el-table-column>
-                <el-table-column label="理论持仓数量" sortable align="center"></el-table-column>
-                <el-table-column label="实际持仓数量" sortable align="center"></el-table-column>
-            </el-table>
-            <div class="pagination">
-                <el-pagination :current-page.sync="currentPage" layout="prev, pager, next" :page-size="pageSzie" :pager-count="5" :total="total" @current-change="handleCurrentChange"></el-pagination>
-            </div>
-        </div>
-        <div>
-            <transition name="fade">
-                <loading v-if="isLoading"></loading>
-            </transition>
-        </div>
+  <div class="dnfbox">
+    <div class="leftbox">
+      <div class="dnftitle">{{strategyName}}-{{strategyTypeText}}</div>
+      <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+      <div id="myChart" :style="{width: '100%', height: '364px'}"></div>
     </div>
+    <div class="rightbox" v-if="tableData.length>0">
+      <el-table :data="tableData" style="width: 100%;background-color:rgb(67,67,67);" :height="350" :span="24" :row-style="{height:'40px'}" :header-row-style="{height:'32px'}" :default-sort="{prop: 'LineIndex', order: 'descending'}" :cell-style="cellStyle" :header-cell-style="headerCellStyle" :border="true" stripe>
+        <!-- <el-table-column prop="LineIndex" label="网格线索引" sortable align="center"></el-table-column> -->
+        <el-table-column show-overflow-tooltip label="网格线索引" align="center">
+          <template slot-scope="scope">
+            <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.LineIndex}}</div>
+            <div v-if="scope.row.TheoryPositionNum<=0">{{scope.row.LineIndex}}</div>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column prop="LinePrice" label="网格线价格" sortable align="center"></el-table-column> -->
+        <el-table-column show-overflow-tooltip label="网格线价格" align="center">
+          <template slot-scope="scope">
+            <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.LinePrice}}</div>
+            <div v-if="scope.row.TheoryPositionNum<=0">{{scope.row.LinePrice}}</div>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column prop="TheoryPositionNum" label="理论持仓数量" sortable align="center"></el-table-column> -->
+        <el-table-column show-overflow-tooltip label="理论持仓数量" align="center">
+          <template slot-scope="scope">
+            <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.TheoryPositionNum}}</div>
+            <div v-if="scope.row.TheoryPositionNum<=0&&scope.row.TruePositionNum<=0">{{scope.row.TheoryPositionNum}}</div>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column prop="TruePositionNum" label="实际持仓数量" sortable align="center"></el-table-column> -->
+        <el-table-column show-overflow-tooltip label="实际持仓数量" align="center">
+          <template slot-scope="scope">
+            <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.TruePositionNum}}</div>
+            <div v-if="scope.row.TheoryPositionNum<=0&&scope.row.TruePositionNum<=0">{{scope.row.TruePositionNum}}</div>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination :current-page.sync="currentPage" layout="prev, pager, next" :page-size="pageSzie" :pager-count="5" :total="total" @current-change="handleCurrentChange"></el-pagination>
+      </div>
+    </div>
+    <div class="rightbox" v-if="tableData.length<=0">
+      <el-table :data="tableData" style="width: 100%;background-color:rgb(67,67,67);" :height="368" :span="24" :row-style="{height:'36px'}" :header-row-style="{height:'32px'}" :default-sort="{prop: 'LineIndex', order: 'descending'}" :cell-style="cellStyle" :header-cell-style="headerCellStyle" :border="true" stripe>
+        <el-table-column label="网格线索引" sortable align="center"></el-table-column>
+        <el-table-column label="网格线价格" sortable align="center"></el-table-column>
+        <el-table-column label="理论持仓数量" sortable align="center"></el-table-column>
+        <el-table-column label="实际持仓数量" sortable align="center"></el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination :current-page.sync="currentPage" layout="prev, pager, next" :page-size="pageSzie" :pager-count="5" :total="total" @current-change="handleCurrentChange"></el-pagination>
+      </div>
+    </div>
+    <div>
+      <transition name="fade">
+        <loading v-if="isLoading"></loading>
+      </transition>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -111,8 +112,10 @@ export default {
   computed: {
     headerCellStyle() {
       return {
-        padding: "3px 0",
-        background: "rgb(54,54,54)",
+        padding: "1px 0",
+        background: "#2E2E30",
+        height: "34px",
+        border: "0px",
         color: "#CCCCCC",
         "font-size": "12px"
       };
@@ -282,10 +285,11 @@ export default {
       // 基于准备好的dom，初始化echarts实例
       let myChart = this.$echarts.init(document.getElementById("myChart"));
       let o, p;
-      if (gridLinePrices > 11) {
+      if (gridLinePrices.length > 11) {
         if (c) {
           o = c * 0.7;
           p = 100 ? c * 1.3 : 100;
+          console.log("我是p", p);
         } else {
           o = 0;
           p = 100;
@@ -303,15 +307,24 @@ export default {
       var upBorderColor = "#8A0000";
       var downColor = "#00da3c";
       var downBorderColor = "#008F28";
-
+      //stopWinPrice为止盈价，stopLossPrice为止损价
       let stopLossPrice1, stopWinPrice1;
+      //当止损价小于<Y轴最小值时
       if (stopLossPrice < gridLinePrices[0]) {
         stopLossPrice1 = gridLinePrices[0];
+      } else if (stopLossPrice > gridLinePrices[gridLinePrices.length - 1]) {
+        //当止损价>Y轴最大值时
+        stopLossPrice1 = gridLinePrices[gridLinePrices.length - 1];
       } else {
         stopLossPrice1 = stopLossPrice;
       }
+
+      //当止盈价>Y轴最大值时
       if (stopWinPrice > gridLinePrices[gridLinePrices.length - 1]) {
         stopWinPrice1 = gridLinePrices[gridLinePrices.length - 1];
+      } else if (stopWinPrice < gridLinePrices[0]) {
+        //当止盈价<Y轴最小值时
+        stopWinPrice1 = gridLinePrices[0];
       } else {
         stopWinPrice1 = stopWinPrice;
       }
@@ -321,7 +334,28 @@ export default {
         gridLinePrices[gridLinePrices.length - 1],
         stopWinPrice1
       );
-      let markLine,str;
+      //判断是否有止损止盈的点scatter
+      // console.log("止损止盈的点", scatter);
+      let sca=scatter.map((item, index) => {
+        console.log('他',item[2])
+        //点大于Y轴最大值
+        if (
+          Number(item[2]) > Number(gridLinePrices[gridLinePrices.length - 1])
+        ) {
+          console.log(11);
+          item[2] = gridLinePrices[gridLinePrices.length - 1];
+          item[1]=gridLinePrices.length - 1;
+        } else if (Number(item[2]) < Number(gridLinePrices[0])) {
+          console.log(22);
+          //点小于Y轴最小值
+          item[2] = gridLinePrices[0];
+          console.log('它它',item[2])
+          item[1]=0;
+        }
+        return item;
+      });
+      console.log('他他',scatter,sca);
+      let markLine, str;
       if (isNeedStopWinOrStopLoss == 1) {
         markLine = {
           symbol: "none",
@@ -333,13 +367,13 @@ export default {
               lineStyle: {
                 normal: {
                   type: "dashed",
-                  color: "red"
+                  color: "#FF5C5C"
                 }
               },
               label: {
                 show: true,
                 position: "middle",
-                color: "red",
+                color: "#FF5C5C",
                 formatter: function(params) {
                   str = "止盈线:" + stopWinPrice;
 
@@ -365,13 +399,13 @@ export default {
               lineStyle: {
                 normal: {
                   type: "dashed",
-                  color: "green"
-                },
+                  color: "#39E365"
+                }
               },
               label: {
                 show: true,
                 position: "middle",
-                color: "green",
+                color: "#39E365",
                 formatter: function(params) {
                   str = "止损线:" + stopLossPrice;
 
@@ -406,12 +440,20 @@ export default {
       myChart.setOption({
         //表格名称
         title: {
-          text: strategyName + "-" + strategyTypeText,
           left: "center",
           top: 10,
           fontSize: "12px"
         },
-        backgroundColor: "rgb(17,17,19)",
+        backgroundColor: "rgb(46,46,48)",
+        grid: {
+          show: true,
+          borderColor: "transparent",
+          backgroundColor: "#262628",
+          x: 90,
+          y: 20,
+          x2: 50,
+          y2: 60
+        },
         //公用的X轴
         xAxis: {
           type: "category",
@@ -420,7 +462,7 @@ export default {
             show: false
           },
           //线的样式
-          axisLine: { lineStyle: { color: "#8392A5" } }
+          axisLine: { lineStyle: { color: "#B3B5B7" } }
         },
         //Y轴,这里有左右两个Y轴
         yAxis: [
@@ -432,11 +474,10 @@ export default {
             axisLine: {
               lineStyle: {
                 color: function(value, index) {
-                  console.log("值", value);
                   if (value == middlePrice) {
                     return "white";
                   } else {
-                    return value > middlePrice ? "red" : "green";
+                    return value > middlePrice ? "#FF5C5C" : "#39E365";
                   }
                 }
               }
@@ -444,7 +485,12 @@ export default {
             //横向网格线
             splitLine: {
               show: true,
-              lineStyle: { color: "rgb(131,146,165,0.3)" }
+              lineStyle: { color: "#434347" }
+            },
+            lineStyle: {
+              color: ["#2F2F31"],
+              width: 1,
+              type: "solid"
             },
             data: gridLinePrices
           }
@@ -454,21 +500,28 @@ export default {
             type: "slider",
             show: true,
             yAxisIndex: [0],
-            left: "93%",
+            right: "12px",
             start: o, //数据窗口范围的起始百分比
             end: p,
             showDetail: false,
-            width: "20px"
+            width: "20px",
+            backgroundColor: "#3B3B3D",
+            fillerColor: "#4F5050",
+            borderColor: "transparent"
           },
           {
             type: "slider",
             show: true,
+            bottom: "10px",
             xAxisIndex: [0],
             start: 0, //数据窗口范围的起始百分比
             end: 100,
             color: "#fff",
             height: "20px",
-            showDetail: false
+            showDetail: false,
+            backgroundColor: "#3B3B3D",
+            fillerColor: "#4F5050",
+            borderColor: "transparent"
           },
           {
             type: "inside",
@@ -486,7 +539,8 @@ export default {
             var value = param.value;
             return (
               '<div style="border-bottom: 1px solid rgba(255,255,255,.3);width:160px;hieght:300px; font-size: 12px;"> ' +
-              value[2] +
+              // value[2] +
+              "成交时间" +
               "(" +
               value[0] +
               ")" +
@@ -502,7 +556,9 @@ export default {
           {
             //scatter为散点图
             type: "scatter",
-            data: scatter,
+            // data: scatter,
+            data:sca,
+            z: 10000,
             itemStyle: {
               normal: {
                 // shadowBlur: 10,
@@ -510,9 +566,9 @@ export default {
                 // shadowOffsetY: 5,
                 color: function(e) {
                   if (e.value[3] == "buy") {
-                    return "red";
+                    return "#FF5C5C";
                   } else {
-                    return "green";
+                    return "#39E365";
                   }
                 }
               }
@@ -534,18 +590,33 @@ export default {
 }
 .dnfbox .leftbox {
   float: left;
-  width: 60%;
+  width: 59.8%;
+  margin-right: 2px;
+}
+.dnftitle {
+  width: 100%;
+  height: 34px;
+  background-color: #2e2e30;
+  font-size: 14px;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  line-height: 34px;
+  margin-bottom: 4px;
 }
 .dnfbox .rightbox {
   float: right;
   width: 40%;
   background-color: rgb(23, 23, 33);
 }
+.dnfbox .pagination {
+  border-top: 2px solid rgb(17, 17, 19);
+  height: 50px;
+  background-color: #2e2e30;
+  position: relative;
+}
 </style>
 <style>
-.redColor {
-  color: red !important;
-}
 .dnfbox .el-table tr {
   height: 24px;
   background-color: rgb(31, 31, 31);
@@ -557,7 +628,7 @@ export default {
   border: none;
 }
 .dnfbox .el-table--striped .el-table__body tr.el-table__row--striped td {
-  background: rgb(46, 46, 47);
+  background: #2e2e30;
 }
 .dnfbox .el-table--border::after {
   background-color: rgb(67, 67, 67);
@@ -571,21 +642,30 @@ export default {
 }
 
 .dnfbox .el-pagination button:disabled {
-  background-color: #171721;
+  background-color: rgb(46, 46, 48);
 }
 .dnfbox .el-pager li {
-  background-color: #171721;
+  background-color: rgb(46, 46, 48);
   color: #c0c4cc;
 }
 .el-pager li.active {
-  color: #409eff !important;
+  color: #e46943 !important;
 }
 .dnfbox .el-pagination .btn-next {
-  background-color: #171721;
+  background-color: rgb(46, 46, 48);
   color: #c0c4cc;
 }
 .dnfbox .el-pagination .btn-prev {
-  background-color: #171721;
+  background-color: rgb(46, 46, 48);
   color: #c0c4cc;
+}
+.dnfbox .el-table::before {
+  background-color: rgb(17, 17, 19);
+}
+.dnfbox .el-pagination {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 8px);
+  background-color: rgb(46, 46, 48);
 }
 </style>
