@@ -201,7 +201,8 @@ export default {
                   (item[2] - this.gridLinePrices[0]) / numBox,
                   item[2],
                   item[3],
-                  item[4]
+                  item[4],
+                  item[5]
                 ]);
               });
               a = this.scatter[0][2];
@@ -336,27 +337,31 @@ export default {
       );
       //判断是否有止损止盈的点scatter
       // console.log("止损止盈的点", scatter);
-      let sca=scatter.map((item, index) => {
-        console.log('他',item[2])
+      let sca = scatter.map((item, index) => {
+        console.log("他", item[2]);
         //点大于Y轴最大值
         if (
           Number(item[2]) > Number(gridLinePrices[gridLinePrices.length - 1])
         ) {
           console.log(11);
           item[2] = gridLinePrices[gridLinePrices.length - 1];
-          item[1]=gridLinePrices.length - 1;
+          item[1] = gridLinePrices.length - 1;
         } else if (Number(item[2]) < Number(gridLinePrices[0])) {
           console.log(22);
           //点小于Y轴最小值
           item[2] = gridLinePrices[0];
-          console.log('它它',item[2])
-          item[1]=0;
+          console.log("它它", item[2]);
+          item[1] = 0;
         }
         return item;
       });
-      console.log('他他',scatter,sca);
+      console.log("他他", scatter, sca);
       let markLine, str;
-      if (isNeedStopWinOrStopLoss == 1) {
+      if (
+        isNeedStopWinOrStopLoss == 1 &&
+        Number(stopWinPrice) != 0 &&
+        Number(stopLossPrice) != 0
+      ) {
         markLine = {
           symbol: "none",
           data: [
@@ -393,6 +398,95 @@ export default {
                 }
               }
             },
+            {
+              name: "止损线",
+              yAxis: stopLossPrice1,
+              lineStyle: {
+                normal: {
+                  type: "dashed",
+                  color: "#39E365"
+                }
+              },
+              label: {
+                show: true,
+                position: "middle",
+                color: "#39E365",
+                formatter: function(params) {
+                  str = "止损线:" + stopLossPrice;
+
+                  return str;
+                }
+              },
+              tooltip: {
+                /*返回需要的信息*/
+                formatter: function(param) {
+                  var value = param.value;
+                  return (
+                    '<div style="border-bottom: 1px solid rgba(255,255,255,.3);width:160px;hieght:300px; font-size: 12px;"> ' +
+                    "止损线：" +
+                    stopLossPrice +
+                    "</div>"
+                  );
+                }
+              }
+            }
+          ],
+          label: {
+            normal: {
+              show: true,
+              position: "middle"
+            }
+          }
+        };
+      } else if (isNeedStopWinOrStopLoss == 1 && Number(stopWinPrice) != 0) {
+        markLine = {
+          symbol: "none",
+          data: [
+            {
+              name: "止盈线",
+              //   yAxis: stopWinPrice
+              yAxis: stopWinPrice1,
+              lineStyle: {
+                normal: {
+                  type: "dashed",
+                  color: "#FF5C5C"
+                }
+              },
+              label: {
+                show: true,
+                position: "middle",
+                color: "#FF5C5C",
+                formatter: function(params) {
+                  str = "止盈线:" + stopWinPrice;
+
+                  return str;
+                }
+              },
+              tooltip: {
+                /*返回需要的信息*/
+                formatter: function(param) {
+                  var value = param.value;
+                  return (
+                    '<div style="border-bottom: 1px solid rgba(255,255,255,.3);width:160px;hieght:300px; font-size: 12px;"> ' +
+                    "止盈线：" +
+                    stopWinPrice +
+                    "</div>"
+                  );
+                }
+              }
+            }
+          ],
+          label: {
+            normal: {
+              show: true,
+              position: "middle"
+            }
+          }
+        };
+      } else if (isNeedStopWinOrStopLoss == 1 && Number(stopLossPrice) != 0) {
+        markLine = {
+          symbol: "none",
+          data: [
             {
               name: "止损线",
               yAxis: stopLossPrice1,
@@ -557,7 +651,7 @@ export default {
             //scatter为散点图
             type: "scatter",
             // data: scatter,
-            data:sca,
+            data: sca,
             z: 10000,
             itemStyle: {
               normal: {
@@ -565,7 +659,7 @@ export default {
                 // shadowColor: "rgba(120, 36, 50, 0.5)",
                 // shadowOffsetY: 5,
                 color: function(e) {
-                  if (e.value[3] == "buy") {
+                  if (e.value[5] == "open") {
                     return "#FF5C5C";
                   } else {
                     return "#39E365";
