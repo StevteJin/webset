@@ -107,6 +107,10 @@ export default {
           that.timer = false;
         }, 400);
       }
+    },
+    "$route.query": function(newVal, oldVal) {
+      console.log("新的", newVal);
+      location.reload();
     }
   },
   computed: {
@@ -260,6 +264,7 @@ export default {
               null
             );
             this.isLoading = false;
+            console.log("我是isLoading", this.isLoading);
           }
         })
         .catch(err => {
@@ -337,25 +342,31 @@ export default {
       );
       //判断是否有止损止盈的点scatter
       // console.log("止损止盈的点", scatter);
-      let sca = scatter.map((item, index) => {
-        console.log("他", item[2]);
-        //点大于Y轴最大值
-        if (
-          Number(item[2]) > Number(gridLinePrices[gridLinePrices.length - 1])
-        ) {
-          console.log(11);
-          item[2] = gridLinePrices[gridLinePrices.length - 1];
-          item[1] = gridLinePrices.length - 1;
-        } else if (Number(item[2]) < Number(gridLinePrices[0])) {
-          console.log(22);
-          //点小于Y轴最小值
-          item[2] = gridLinePrices[0];
-          console.log("它它", item[2]);
-          item[1] = 0;
-        }
-        return item;
-      });
-      console.log("他他", scatter, sca);
+      let sca;
+      if (scatter&&scatter.length > 0) {
+        sca = scatter.map((item, index) => {
+          console.log("他", item[2]);
+          //点大于Y轴最大值
+          if (
+            Number(item[2]) > Number(gridLinePrices[gridLinePrices.length - 1])
+          ) {
+            console.log(11);
+            item[2] = gridLinePrices[gridLinePrices.length - 1];
+            item[1] = gridLinePrices.length - 1;
+          } else if (Number(item[2]) < Number(gridLinePrices[0])) {
+            console.log(22);
+            //点小于Y轴最小值
+            item[2] = gridLinePrices[0];
+            console.log("它它", item[2]);
+            item[1] = 0;
+          }
+          return item;
+        });
+        console.log("他他", scatter, sca);
+      } else {
+        sca = null;
+      }
+
       let markLine, str;
       if (
         isNeedStopWinOrStopLoss == 1 &&

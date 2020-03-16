@@ -16,6 +16,7 @@ export default {
     top: 0;
     bottom:0;
     background:url("~@/assets/img/loading.gif") center 20% no-repeat rgb(17, 17, 19);
+    background-size:30px 30px;
     width: 100vw;
     height: 100vh;
     z-index: 1000;
