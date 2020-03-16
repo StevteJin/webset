@@ -1,11 +1,11 @@
 <template>
   <div class="tableheight">
-    <el-table v-if="EventType1.length>0&StrategyName1.length>0&StrategyID1.length>0" :data="tableData" style="width: 100%;" :height="400" :span="24" :row-style="{height:'40px'}" :header-row-style="{height:'32px'}" :cell-style="{padding:'1px'}" :default-sort="{prop: 'EventTime', order: 'descending'}" :span-method="objectSpanMethod">
-      <el-table-column prop="StrategyName" label="策略名称" sortable width="100"></el-table-column>
-      <el-table-column prop="StrategyID" label="策略ID" width="140" sortable></el-table-column>
-      <el-table-column prop="EventTypeText" label="事件类型" sortable width="100"></el-table-column>
-      <el-table-column prop="EventTime" label="发生时间" sortable width="180"></el-table-column>
-      <el-table-column prop="EventDetail" label="事件详情" sortable width="340"></el-table-column>
+    <el-table v-if="EventType1.length>0&StrategyName1.length>0&StrategyID1.length>0" :data="tableData" style="width: 100%;" :height="400" :span="24" :row-style="{height:'40px'}" :header-row-style="{height:'32px'}" :cell-style="{padding:'1px'}" :span-method="objectSpanMethod">
+      <el-table-column prop="StrategyName" label="策略名称"  width="100"></el-table-column>
+      <el-table-column prop="StrategyID" label="策略ID" width="140" ></el-table-column>
+      <el-table-column prop="EventTypeText" label="事件类型"  width="100"></el-table-column>
+      <el-table-column prop="EventTime" label="发生时间"  width="180"></el-table-column>
+      <el-table-column prop="EventDetail" label="事件详情"  width="340"></el-table-column>
       <el-table-column align="right">
         <template slot="header">
           <el-select v-model="value1" style="width:20%;" filterable clearable placeholder="策略名称">
