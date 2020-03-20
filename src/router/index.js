@@ -4,6 +4,7 @@ import Router from 'vue-router';
 import index from '@/pages/index/index';
 import h5 from '@/pages/h5/h5';
 import draw from '@/pages/draw/draw';
+import h5draw from '@/pages/h5draw/h5draw';
 
 Vue.use(Router);
 
@@ -25,6 +26,12 @@ const routes = [{
     title: '图表'
   },
   component: draw
+}, {
+  path: '/h5draw',
+  meta: {
+    title: '图表'
+  },
+  component: h5draw
 }];
 
 const router = new Router({
