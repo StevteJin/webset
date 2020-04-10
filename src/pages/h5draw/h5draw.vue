@@ -1,9 +1,9 @@
 <template>
   <div class="dnfxxbox">
     <div class="leftbox" v-if="type==1">
-      <div class="dnftitle">{{strategyName}}-{{strategyTypeText}}</div>
+      <!-- <div class="dnftitle">{{strategyName}}-{{strategyTypeText}}</div> -->
       <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-      <div id="myChart" :style="{width: '100%', height: '90vh'}"></div>
+      <div id="myChart" :style="{width: '100%', height: '100vh'}"></div>
     </div>
     <div class="rightbox" v-if="tableData.length>0&&type!=1">
       <el-table :data="tableData" style="width: 100%;background-color:#111113;" :height="320" :span="24" :row-style="{height:'26px'}" :header-row-style="{height:'20px'}" :default-sort="{prop: 'LineIndex', order: 'descending'}" :cell-style="cellStyle" :header-cell-style="headerCellStyle" :border="true" stripe>

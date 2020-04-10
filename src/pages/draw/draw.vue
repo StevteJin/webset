@@ -11,14 +11,14 @@
         <el-table-column show-overflow-tooltip label="网格线索引" align="center">
           <template slot-scope="scope">
             <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.LineIndex}}</div>
-            <div v-if="scope.row.TheoryPositionNum<=0">{{scope.row.LineIndex}}</div>
+            <div v-if="scope.row.TheoryPositionNum<=0&&scope.row.TruePositionNum<=0">{{scope.row.LineIndex}}</div>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="LinePrice" label="网格线价格" sortable align="center"></el-table-column> -->
         <el-table-column show-overflow-tooltip label="网格线价格" align="center">
           <template slot-scope="scope">
             <div style="color:rgb(0,122,204);" v-if="scope.row.TheoryPositionNum>0||scope.row.TruePositionNum>0">{{scope.row.LinePrice}}</div>
-            <div v-if="scope.row.TheoryPositionNum<=0">{{scope.row.LinePrice}}</div>
+            <div v-if="scope.row.TheoryPositionNum<=0&&scope.row.TruePositionNum<=0">{{scope.row.LinePrice}}</div>
           </template>
         </el-table-column>
         <!-- <el-table-column prop="TheoryPositionNum" label="理论持仓数量" sortable align="center"></el-table-column> -->
