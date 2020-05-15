@@ -7,7 +7,7 @@
       <el-table-column prop="EventTime" label="发生时间"  width="180"></el-table-column>
       <el-table-column prop="EventDetail" label="事件详情"  width="340"></el-table-column>
       <el-table-column align="right">
-        <template slot="header">
+        <template slot="header" slot-scope="scope">
           <el-select v-model="value1" style="width:20%;" filterable clearable placeholder="策略名称">
             <el-option v-for="(item,index) in StrategyName1" :key="index" :value="item.value"></el-option>
           </el-select>

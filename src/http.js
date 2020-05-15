@@ -22,9 +22,9 @@ axios.interceptors.request.use(
   config => {
     // 如果存在token,请求头里面设置
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = token;
-    }
+    // if (token) {
+    //   config.headers.Authorization = token;
+    // }
     return config;
   },
   err => {
